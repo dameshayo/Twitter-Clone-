@@ -1,0 +1,94 @@
+{% extends 'base.html' %} {% block content %}
+{% load static %}
+<!-- <a href="/post/create/" class="btn btn-primary mb-3">Create Post</a> -->
+
+{% for post in posts %}
+<div class="card mb-3">
+  <div class="row g-0">
+    <!-- Left column: Avatar -->
+    <div class="col-auto d-flex align-items-start p-3">
+      <img
+        src="https://randomuser.me/api/portraits/men/32.jpg"
+        alt="avatar"
+        class="rounded-circle"
+        style="width: 50px; height: 50px; object-fit: cover"
+      />
+    </div>
+
+    <!-- Right column: Content -->
+    <div class="col">
+      <!-- Header -->
+     <div class="d-flex justify-content-between align-items-center p-3 pb-1">
+  <div class="d-flex align-items-center">
+    <h6 class="mb-0 me-2">
+      {{ post.user.first_name }} {{ post.user.last_name }}
+    </h6>
+    <h6 class="mb-0 text-muted">@{{ post.user.username }}</h6>
+  </div>
+
+  {% if request.user != post.user %}
+    {% if post.user.id in following_ids %}
+      <a
+        href="{% url 'unfollow' post.user.id %}"
+        class="btn btn-sm btn-outline-danger"
+      >
+        Unfollow
+      </a>
+    {% else %}
+      <a
+        href="{% url 'follow' post.user.id %}"
+        class="btn btn-sm btn-outline-primary"
+      >
+        Follow
+      </a>
+    {% endif %}
+  {% endif %}
+
+</div>
+
+
+      <!-- Body -->
+      <div class="px-3 pb-2">
+        <p class="mb-2">{{ post.content }}</p>
+      </div>
+
+      <!-- Footer -->
+      <div
+        class="d-flex justify-content-between align-items-center px-3 pb-3 text-muted"
+      >
+        <div>
+          <a href="#" class="me-3 text-decoration-none">💬 Comment</a>
+          <a href="#" class="me-3 text-decoration-none">❤️ Like</a>
+        </div>
+        <small>{{ post.created_at }}</small>
+      </div>
+    </div>
+  </div>
+</div>
+{% empty %}
+<p class="text-center text-muted">No posts to display.</p>
+{% endfor %}
+
+
+<!-- Floating Action Button -->
+<a
+  href="/post/create/"
+  class="btn btn-primary rounded-circle shadow"
+  style="
+    position: fixed;
+    bottom: 20px;
+    right: 300px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  "
+>
+  +
+</a>
+
+{% endblock %}
+
+

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>New Post</h2>
+<form method="post">
+    {% csrf_token %}
+    <textarea class="form-control mb-2" name="content"></textarea>
+    <button class="btn btn-success">Post</button>
+</form>
+{% endblock %}

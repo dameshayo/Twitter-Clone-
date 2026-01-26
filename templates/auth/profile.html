@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- Profile Header -->
+  <div class="d-flex align-items-center mb-4">
+    {% if profile.profile_image %}
+      <img
+        src="{{ profile.profile_image.url }}"
+        alt="Profile Image"
+        class="rounded-circle me-3"
+        style="width: 100px; height: 100px; object-fit: cover"
+      />
+    {% else %}
+      <img
+        src="https://randomuser.me/api/portraits/men/32.jpg"
+        alt="Default Avatar"
+        class="rounded-circle me-3"
+        style="width: 100px; height: 100px; object-fit: cover"
+      />
+    {% endif %}
+
+    <div>
+      <h4 class="mb-0">
+        {{ profile_user.first_name }} {{ profile_user.last_name }}
+      </h4>
+
+      <p class="text-muted mb-1">@{{ profile_user.username }}</p>
+
+      <div class="d-flex gap-3 align-items-center">
+        <span><strong>{{ followers_count }}</strong> Followers</span>
+        <span><strong>{{ following_count }}</strong> Following</span>
+
+        {% if request.user != profile_user %}
+          {% if is_following %}
+            <a href="{% url 'unfollow' profile_user.id %}"
+               class="btn btn-sm btn-outline-danger">
+              Unfollow
+            </a>
+          {% else %}
+            <a href="{% url 'follow' profile_user.id %}"
+               class="btn btn-sm btn-outline-primary">
+              Follow
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div> <!-- ✅ CLOSE profile header -->
+
+  <!-- Bio -->
+  <h5>Bio</h5>
+  <p>{{ profile.bio }}</p>
+
+  {% if request.user == profile_user %}
+  <!-- Update Form -->
+  <h5 class="mt-4">Update Profile</h5>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">First Name</label>
+      <input
+        type="text"
+        placeholder="First Name"
+        name="first_name"
+        value="{{ profile_user.first_name }}"
+        class="form-control"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Last Name</label>
+      <input
+        type="text"
+        name="last_name"
+        placeholder="Last Name"
+        value="{{ profile_user.last_name }}"
+        class="form-control"
+      />
+    </div>
+
+     <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        value="{{ profile_user.username }}"
+        class="form-control"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Bio</label>
+      <textarea class="form-control" 
+      placeholder="xxxxxxxxxxx"
+      name="bio" rows="3">{{ profile_user.bio }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Profile Image</label>
+      <input type="file" 
+      placeholder="Profile"
+      name="profile_image" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary">Update Profile</button>
+  </form>
+  {% endif %}
+
+</div>
+{% endblock %}
