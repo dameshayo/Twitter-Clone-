@@ -1,24 +1,22 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 
 <div class="container mt-4">
-
   <!-- Profile Header -->
   <div class="d-flex align-items-center mb-4">
     {% if profile.profile_image %}
-      <img
-        src="{{ profile.profile_image.url }}"
-        alt="Profile Image"
-        class="rounded-circle me-3"
-        style="width: 100px; height: 100px; object-fit: cover"
-      />
+    <img
+      src="{{ profile.profile_image.url }}"
+      alt="Profile Image"
+      class="rounded-circle me-3"
+      style="width: 100px; height: 100px; object-fit: cover"
+    />
     {% else %}
-      <img
-        src="https://randomuser.me/api/portraits/men/32.jpg"
-        alt="Default Avatar"
-        class="rounded-circle me-3"
-        style="width: 100px; height: 100px; object-fit: cover"
-      />
+    <img
+      src="https://randomuser.me/api/portraits/men/32.jpg"
+      alt="Default Avatar"
+      class="rounded-circle me-3"
+      style="width: 100px; height: 100px; object-fit: cover"
+    />
     {% endif %}
 
     <div>
@@ -32,22 +30,25 @@
         <span><strong>{{ followers_count }}</strong> Followers</span>
         <span><strong>{{ following_count }}</strong> Following</span>
 
-        {% if request.user != profile_user %}
-          {% if is_following %}
-            <a href="{% url 'unfollow' profile_user.id %}"
-               class="btn btn-sm btn-outline-danger">
-              Unfollow
-            </a>
-          {% else %}
-            <a href="{% url 'follow' profile_user.id %}"
-               class="btn btn-sm btn-outline-primary">
-              Follow
-            </a>
-          {% endif %}
-        {% endif %}
+        {% if request.user != profile_user %} {% if is_following %}
+        <a
+          href="{% url 'unfollow' profile_user.id %}"
+          class="btn btn-sm btn-outline-danger"
+        >
+          Unfollow
+        </a>
+        {% else %}
+        <a
+          href="{% url 'follow' profile_user.id %}"
+          class="btn btn-sm btn-outline-primary"
+        >
+          Follow
+        </a>
+        {% endif %} {% endif %}
       </div>
     </div>
-  </div> <!-- ✅ CLOSE profile header -->
+  </div>
+  <!-- ✅ CLOSE profile header -->
 
   <!-- Bio -->
   <h5>Bio</h5>
@@ -81,7 +82,7 @@
       />
     </div>
 
-     <div class="mb-3">
+    <div class="mb-3">
       <label class="form-label">Username</label>
       <input
         type="text"
@@ -94,21 +95,69 @@
 
     <div class="mb-3">
       <label class="form-label">Bio</label>
-      <textarea class="form-control" 
-      placeholder="xxxxxxxxxxx"
-      name="bio" rows="3">{{ profile_user.bio }}</textarea>
+      <textarea
+        class="form-control"
+        placeholder="xxxxxxxxxxx"
+        name="bio"
+        rows="3"
+      >
+{{ profile_user.bio }}</textarea
+      >
     </div>
 
     <div class="mb-3">
       <label class="form-label">Profile Image</label>
-      <input type="file" 
-      placeholder="Profile"
-      name="profile_image" class="form-control" />
+      <input
+        type="file"
+        placeholder="Profile"
+        name="profile_image"
+        class="form-control"
+      />
     </div>
 
     <button class="btn btn-primary">Update Profile</button>
   </form>
   {% endif %}
 
+  <!-- User Posts -->
+  <div class="container mt-5">
+    <h5 class="mb-3">Posts by {{ profile_user.username }}</h5>
+
+    {% if posts %} {% for post in posts %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong>
+            {{ post.user.first_name }} {{ post.user.last_name }}
+          </strong>
+
+          <div class="d-flex align-items-center gap-2">
+            <small class="text-muted">
+              {{ post.created_at|date:"M d, Y H:i" }}
+            </small> 
+
+            {% if request.user == profile_user %}
+            <form method="post" action="{% url 'delete_post' post.id %}">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-sm btn-link text-danger p-0"
+                title="Delete post"
+                onclick="return confirm('Delete this post?');"
+              >
+                <i class="fa fa-trash"></i>
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+
+        <p class="mb-0">{{ post.content }}</p>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <p class="text-muted">This user has not posted anything yet.</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

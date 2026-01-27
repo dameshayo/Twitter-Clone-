@@ -44,6 +44,8 @@ def login_view(request):
 @login_required
 def profile_view(request):
     profile = services.get_user_profile(request.user)
+    
+    user_posts = services.get_posts_by_user(request.user)
 
     followers_count = services.get_followers_count(request.user)
     following_count = services.get_following_count(request.user)
@@ -61,6 +63,7 @@ def profile_view(request):
         'profile_user': profile.user,
         'followers_count': followers_count,
         'following_count': following_count,
+        'posts': user_posts
     })
 
 

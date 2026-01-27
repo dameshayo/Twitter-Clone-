@@ -3,7 +3,25 @@
 <h2>New Post</h2>
 <form method="post">
     {% csrf_token %}
-    <textarea class="form-control mb-2" name="content"></textarea>
+
+    <!-- Title -->
+    <input
+        type="text"
+        name="title"
+        class="form-control mb-2"
+        placeholder="Post title (optional)"
+    />
+
+    <!-- Content -->
+    <textarea
+        class="form-control mb-2"
+        name="content"
+        placeholder="What's happening?"
+        rows="3"
+        required
+    ></textarea>
+
     <button class="btn btn-success">Post</button>
 </form>
+
 {% endblock %}

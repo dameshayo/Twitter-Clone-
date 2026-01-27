@@ -1,4 +1,6 @@
 from django.db import IntegrityError
+
+from posts.models import Post
 from .models import Follower
 
 
@@ -39,6 +41,9 @@ def is_following(user_from, user_to):
 
 def get_followers_count(user):
     return Follower.objects.filter(follower_from=user).count()
+
+def get_posts_by_user(user):
+    return Post.objects.filter(user=user).order_by('-created_at')
 
 def get_following_count(user):
     return Follower.objects.filter(follower_to=user).count()
