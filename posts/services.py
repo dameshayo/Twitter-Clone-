@@ -9,7 +9,7 @@ from .models import Comment
 
 
 def get_all_posts():
-    return Post.objects.all().order_by('-created_at')
+    return Post.objects.all().order_by('-created_at').prefetch_related('comments')
 
 
 def get_posts_by_user(user):
@@ -64,34 +64,5 @@ def get_comments_count_for_posts(post_ids, user_id=None):
     return {item['post_id']: item['count'] for item in queryset}
 
 
-# def get_posts_with_comment_count(user_id=None):
-#     queryset = Post.objects.annotate(
-#         # total comments on the post
-#         comments_count=Count('comments'),
-#         # comments by a specific user (if provided)
-#         # user_comments_count=Count(
-#         #     'comments',
-#         #     filter=models.Q(comments__user_id=user_id) if user_id else models.Q()
-#         # )
-#     ).order_by('-created_at')
-#     return queryset
 
-
-def get_comments_count_for_posts(post_ids):
-    return dict(
-        Comment.objects
-        .filter(post_id__in=post_ids)
-        .values('post_id')
-        .annotate(count=Count('id'))
-        .values_list('post_id', 'count')
-    )
-
-# def get_comments_count_for_posts_by_user(post_ids, user_id):
-#     return dict(
-#         Comment.objects
-#         .filter(post_id__in=post_ids, user_id=user_id)
-#         .values('post_id')
-#         .annotate(count=Count('id'))
-#         .values_list('post_id', 'count')
-#     )
 

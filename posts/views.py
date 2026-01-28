@@ -63,7 +63,7 @@ def add_comment(request, post_id):
             comment.user = request.user
             comment.save()
 
-    return redirect('post_detail', post_id=post.id)  # or redirect to profile/post detail
+    return redirect('home')  # or redirect to profile/post detail
 
 @login_required
 def post_detail_view(request, post_id):
