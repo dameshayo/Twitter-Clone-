@@ -1,10 +1,13 @@
-{% extends 'base.html' %} {% block content %} {% load static %}
-<!-- <a href="/post/create/" class="btn btn-primary mb-3">Create Post</a> -->
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
 
 {% for post in posts %}
-<div class="card mb-3">
+<div class="card mb-3 position-relative">
+
   <div class="row g-0">
-    <!-- Left column: Avatar -->
+
+    <!-- Avatar -->
     <div class="col-auto d-flex align-items-start p-3">
       <img
         src="https://randomuser.me/api/portraits/men/32.jpg"
@@ -14,8 +17,9 @@
       />
     </div>
 
-    <!-- Right column: Content -->
+    <!-- Content -->
     <div class="col">
+
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center p-3 pb-1">
         <div class="d-flex align-items-center">
@@ -26,44 +30,72 @@
         </div>
 
         {% if request.user != post.user %}
-        <a
-          href="{% url 'unfollow' post.user.id %}"
-          class="btn btn-sm btn-outline-danger"
-        >
-          Unfollow
-        </a>
-        {% else %}
-        <a
-          href="{% url 'follow' post.user.id %}"
-          class="btn btn-sm btn-outline-primary"
-        >
-          Follow
-        </a>
+          {% if post.user.id in following_ids %}
+            <a href="{% url 'unfollow' post.user.id %}" class="btn btn-sm btn-outline-danger">
+              Unfollow
+            </a>
+          {% else %}
+            <a href="{% url 'follow' post.user.id %}" class="btn btn-sm btn-outline-primary">
+              Follow
+            </a>
+          {% endif %}
         {% endif %}
       </div>
 
-      <!-- Body -->
-      <div class="px-3 pt-2 pb-2">
+      <!-- Body (Clickable) -->
+      <div class="px-3 pt-2 pb-2 position-relative">
+        <a href="{% url 'post_detail' post.id %}" class="stretched-link"></a>
+
         {% if post.title %}
-        <h6 class="fw-bold mb-1 text-dark">{{ post.title }}</h6>
+          <h6 class="fw-bold mb-1 text-dark">{{ post.title }}</h6>
         {% endif %}
 
         <p class="mb-2 text-body">{{ post.content }}</p>
       </div>
 
-      <!-- Footer -->
-      <div
-        class="d-flex justify-content-between align-items-center px-3 pb-3 text-muted"
-      >
-        <div>
-          <a href="#" class="me-3 text-decoration-none">💬 Comment</a>
-          <a href="#" class="me-3 text-decoration-none">❤️ Like</a>
-        </div>
-        <small>{{ post.created_at }}</small>
+      <!-- Comment Form (Hidden) -->
+      {% if user.is_authenticated %}
+      <div id="comment-form-{{ post.id }}" class="mt-3 ps-3 border-start d-none">
+        <form method="post" action="{% url 'add_comment' post.id %}">
+          {% csrf_token %}
+          <div class="d-flex gap-2">
+            <textarea
+              name="content"
+              class="form-control"
+              rows="2"
+              placeholder="Write a comment..."
+              required
+            ></textarea>
+            <button type="submit" class="btn btn-primary">
+              Comment
+            </button>
+          </div>
+        </form>
       </div>
+      {% endif %}
+
+      <!-- Footer -->
+      <div class="d-flex justify-content-between align-items-center px-3 pt-2 pb-2 text-muted">
+        <div>
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none"
+            onclick="toggleCommentForm({{ post.id }})"
+          >
+          <span>💬 {{ comments_count}} Comments</span>
+
+          </button>
+
+          <a href="#" class="ms-3 text-decoration-none">❤️ Like</a>
+        </div>
+
+        <small>{{ post.created_at|date:"M d, Y H:i" }}</small>
+      </div>
+
     </div>
   </div>
 </div>
+
 {% empty %}
 <p class="text-center text-muted">No posts to display.</p>
 {% endfor %}
@@ -86,5 +118,13 @@
 >
   +
 </a>
+
+<!-- JS -->
+<script>
+  function toggleCommentForm(postId) {
+    const form = document.getElementById("comment-form-" + postId);
+    form.classList.toggle("d-none");
+  }
+</script>
 
 {% endblock %}
